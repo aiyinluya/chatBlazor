@@ -1,0 +1,58 @@
+@page "/"
+@using Markdig
+@inject IJSRuntime JSRuntime
+
+<h3>Chat with GPT</h3>
+
+<div class="chat-window">
+    @foreach (var message in conversation)
+    {
+        <div class="@message.Role">
+            <div class="message-content">
+                @if (message.Role == "bot")
+                {
+                    <div class="markdown-content">@((MarkupString)message.Content)</div>
+                }
+                else
+                {
+                    <div>@message.Content</div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="user-input">
+    <input @bind="userMessage" />
+    <button @onclick="SendMessage">Send</button>
+</div>
+
+@code {
+    private string userMessage;
+    private List<Message> conversation = new List<Message>();
+    private async Task SendMessage()
+    {
+        if (!string.IsNullOrWhiteSpace(userMessage))
+        {
+            conversation.Add(new Message { Role = "user", Content = userMessage });
+            StateHasChanged(); // Update UI to show user's message immediately
+
+            await JSRuntime.InvokeVoidAsync("chatGPT.sendMessage", userMessage, "YOUR GPT KEYS", DotNetObjectReference.Create(this));
+            userMessage = string.Empty; // Clear the input field
+        }
+    }
+
+    private class Message
+    {
+        public string Role { get; set; }
+        public string Content { get; set; }
+    }
+    [JSInvokable("ReceiveMessage")]
+    public void ReceiveMessage(string message)
+    {
+        var messageModel = new Message { Role = "bot", Content = Markdown.ToHtml(message) };
+        conversation.Add(messageModel);
+
+        StateHasChanged(); // Update UI to show bot's message immediately
+    }
+}
