@@ -23,6 +23,7 @@
                 @if (message.Role == "bot")
                 {
                     <div class="markdown-content">@((MarkupString)message.Content)</div>
+                    <button class="copy-button" data-clipboard-text="@((MarkupString)message.Content)">Copy</button>
                 }
                 else
                 {

@@ -31,3 +31,35 @@ window.chatGPT = {
             .catch(error => console.error('Error:', error));
     }
 };
+
+document.addEventListener('DOMContentLoaded', function () {
+    var clipboard = new ClipboardJS('.copy-button', {
+        text: function (trigger) {
+            // 获取相邻的 message-text 元素
+            var messageTextElement = trigger.previousElementSibling;
+
+            // 如果找到 message-text 元素
+            if (messageTextElement) {
+                // 创建一个临时 div 元素
+                var tempDiv = document.createElement('div');
+
+                // 设置其 innerHTML 为 message-text 元素的 innerHTML
+                tempDiv.innerHTML = messageTextElement.innerHTML;
+
+                // 返回纯文本内容
+                return tempDiv.textContent || tempDiv.innerText;
+            }
+
+            // 如果未找到 message-text 元素，则返回空字符串
+            return '';
+        }
+    });
+
+    clipboard.on('success', function (e) {
+        e.clearSelection();
+    });
+
+    clipboard.on('error', function (e) {
+        alert('Copy failed. Please try selecting the text manually.');
+    });
+});
