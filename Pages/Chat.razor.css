@@ -1,10 +1,15 @@
 .chat-window {
     display: flex;
     flex-direction: column;
-    max-height: 400px;
+    height: 80%;
     overflow-y: auto;
-    border: 1px solid #ccc;
+    border: 1px solid #8b5454;
     padding: 10px;
+    width: 100%;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
 .user {
@@ -26,10 +31,52 @@
     margin: 5px;
     max-width: 70%;
     word-wrap: break-word;
+    overflow-y: auto;
+    max-height: 500px;
+}
+
+.dialog {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.message {
+    padding: 15px;
+}
+
+.bot-message {
+    margin: 0 0 10px;
+    font-weight: bold;
 }
 
 .user-input {
-    margin-top: 10px;
+    display: flex;
+}
+
+input {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px 0 0 4px;
+    font-size: 14px;
+}
+
+button {
+    padding: 8px 12px;
+    border: 1px solid #007BFF;
+    border-radius: 0 4px 4px 0;
+    background-color: #007BFF;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+button:hover {
+    background-color: #0056b3;
 }
 /* styles.css */
 

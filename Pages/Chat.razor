@@ -1,8 +1,19 @@
 @page "/"
 @using Markdig
 @inject IJSRuntime JSRuntime
+@inject IConfiguration Configuration
 
 <h3>Chat with GPT</h3>
+
+<div class="dialog">
+    <div class="message">
+        <p class="bot-message">Hello! How can I help you?</p>
+        <div class="user-input">
+            <input type="text" @bind="userMessage" placeholder="Type your message...">
+            <button @onclick="SendMessage">Send</button>
+        </div>
+    </div>
+</div>
 
 <div class="chat-window">
     @foreach (var message in conversation)
@@ -22,14 +33,10 @@
     }
 </div>
 
-<div class="user-input">
-    <input @bind="userMessage" />
-    <button @onclick="SendMessage">Send</button>
-</div>
-
 @code {
     private string userMessage;
     private List<Message> conversation = new List<Message>();
+
     private async Task SendMessage()
     {
         if (!string.IsNullOrWhiteSpace(userMessage))
@@ -37,22 +44,54 @@
             conversation.Add(new Message { Role = "user", Content = userMessage });
             StateHasChanged(); // Update UI to show user's message immediately
 
-            await JSRuntime.InvokeVoidAsync("chatGPT.sendMessage", userMessage, "YOUR GPT KEYS", DotNetObjectReference.Create(this));
+            await JSRuntime.InvokeVoidAsync("chatGPT.sendMessage", userMessage, Configuration["OpenAIKey"], DotNetObjectReference.Create(this));
             userMessage = string.Empty; // Clear the input field
         }
     }
 
-    private class Message
-    {
-        public string Role { get; set; }
-        public string Content { get; set; }
-    }
     [JSInvokable("ReceiveMessage")]
     public void ReceiveMessage(string message)
     {
         var messageModel = new Message { Role = "bot", Content = Markdown.ToHtml(message) };
         conversation.Add(messageModel);
 
-        StateHasChanged(); // Update UI to show bot's message immediately
+        // Update UI to show bot's message immediately
+        StateHasChanged();
+    }
+
+    // Override the OnInitializedAsync lifecycle method
+    @* protected override async Task OnInitializedAsync()
+    {
+        // Use a CancellationTokenSource to cancel the stream when the component is disposed
+        var cts = new CancellationTokenSource();
+
+        // Start a new task to handle the streaming
+        _ = StreamMessagesAsync(cts.Token);
+
+        await base.OnInitializedAsync();
+    }
+
+    // Streaming method to receive and display messages incrementally
+    private async Task StreamMessagesAsync(CancellationToken cancellationToken)
+    {
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            // Simulate receiving messages (replace this with actual streaming logic)
+            await Task.Delay(2000); // Simulate delay between messages
+
+            // Receive a new message (replace this with actual streaming logic)
+            var newMessage = "This is a new message from the server.";
+
+            // Update UI with the new message
+            var messageModel = new Message { Role = "bot", Content = Markdown.ToHtml(newMessage) };
+            conversation.Add(messageModel);
+            StateHasChanged();
+        }
+    } *@
+
+    private class Message
+    {
+        public string Role { get; set; }
+        public string Content { get; set; }
     }
 }
