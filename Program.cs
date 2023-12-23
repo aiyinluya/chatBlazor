@@ -1,7 +1,7 @@
 using chatBlazor.Data;
+using chatBlazor.Service;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using chatBlazor.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<WeatherForecastService>();
 // builder.Services.AddScoped<GptStreamingService>();
-
+builder.WebHost.UseUrls("http://*:" + "8888");
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
